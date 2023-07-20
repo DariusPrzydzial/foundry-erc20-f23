@@ -6,7 +6,8 @@ import {OurToken} from "../src/OurToken.sol";
 import {console} from "forge-std/console.sol";
 
 contract DeployOurToken is Script {
-    uint256 public constant INITIAL_SUPPLY = 1_000_000 ether; // 1 million tokens with 18 decimal places
+    uint256 public constant INITIAL_SUPPLY = 1_000 ether; // 1 thousand tokens with 18 decimal places
+    uint256 public constant DECIMALS = 18;
     uint256 public DEFAULT_ANVIL_PRIVATE_KEY =
         0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
     uint256 public deployerKey;

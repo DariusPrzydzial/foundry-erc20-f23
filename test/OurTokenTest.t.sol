@@ -32,16 +32,7 @@ contract OurTokenTest is StdCheats, Test {
         ourToken.transfer(bob, BOB_STARTING_AMOUNT);
     }
 
-    function testInitialSupply() public {
-        assertEq(ourToken.totalSupply(), deployer.INITIAL_SUPPLY());
-    }
-
-    function testUsersCantMint() public {
-        vm.expectRevert();
-        MintableToken(address(ourToken)).mint(address(this), 1);
-    }
-
-    function testAllowances() public {
+    function testAllowancesOrig() public {
         uint256 initialAllowance = 1000;
 
         // Alice approves Bob to spend tokens on her behalf
@@ -56,4 +47,47 @@ contract OurTokenTest is StdCheats, Test {
     }
 
     // can you get the coverage up?
+    // Test for initial token supply
+    function testInitialSupply() public {
+        assertEq(ourToken.totalSupply(), deployer.INITIAL_SUPPLY());
+    }
+
+    // Test that users can't mint new tokens
+    function testUsersCantMint() public {
+        vm.expectRevert();
+        MintableToken(address(ourToken)).mint(address(this), 1);
+    }
+
+    // Test for correct decimals
+    function testDecimals() public {
+        assertEq(ourToken.decimals(), deployer.DECIMALS());
+    }
+
+    // Test token transfers
+    function testTransfers() public {
+        uint256 amount = 1000;
+        address receiver = address(0x1);
+        uint256 initialBalanceSender = ourToken.balanceOf(bob);
+        uint256 initialBalanceRecipient = ourToken.balanceOf(receiver);
+        vm.prank(bob);
+        ourToken.transfer(receiver, amount);
+        assertEq(ourToken.balanceOf(bob), initialBalanceSender - amount);
+        assertEq(ourToken.balanceOf(receiver), initialBalanceRecipient + amount);
+    }
+
+    // Test token allowances
+    function testAllowances() public {
+        address spender = address(0x123); // Replace with the actual address you want to test
+        uint256 amount = 100;
+
+        ourToken.approve(spender, amount);
+        assertEq(ourToken.allowance(address(this), spender), amount);
+
+        uint256 newAmount = 50;
+        ourToken.increaseAllowance(spender, newAmount);
+        assertEq(ourToken.allowance(address(this), spender), amount + newAmount);
+
+        ourToken.decreaseAllowance(spender, newAmount);
+        assertEq(ourToken.allowance(address(this), spender), amount);
+    }
 }
